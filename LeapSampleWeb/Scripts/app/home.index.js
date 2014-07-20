@@ -17,7 +17,7 @@
     self.direction = true;
     self.progressDiff = 0;
     self.$slider = null;
-    self.slideIndex = 1;
+    self.slideIndex = 0;
 
     self.makeSlide = function () {
         if ($("#bx-pager img").size() == self.slides().length) {
@@ -39,14 +39,12 @@
         self.progressDiff = self.progressDiff + (self.direction ? 1 : -1) * Math.floor(c.get("Progress"));
         self.slideIndex += self.progressDiff;
         */
-        if (c.get("State") != -1) {
-            self.slideIndex += (c.get("Direction") ? 1 : -1);
+        self.slideIndex += (c.get("Direction") ? 1 : -1);
 
-            if (self.slideIndex >= self.slides().length) {
-                self.slideIndex -= self.slides().length;
-            } else if (self.slideIndex < 1) {
-                self.slideIndex += self.slides().length - 1;
-            }
+        if (self.slideIndex >= self.slides().length) {
+            self.slideIndex -= self.slides().length;
+        } else if (self.slideIndex < 0) {
+            self.slideIndex += self.slides().length;
         }
 
     }
@@ -58,11 +56,20 @@
         query.ascending("LoggedAt");
         query.greaterThan("LoggedAt", self.timestamp);
         query.find().then(function (results) {
-            r = results[0];
-            self.calculateSlideIndex(r);
-            self.$slider.goToSlide(self.slideIndex);
-            self.circles.push({ "slideIndex": self.slideIndex });
-            self.timestamp = results[results.length - 1].get("LoggedAt");
+            if (results.length > 0) {
+                r = results[Math.floor(results.length / 2)];
+
+                if (r.get("Progress") >= 1.0 && r.get("Progress") <= 1.5) {
+                    self.calculateSlideIndex(r);
+                    self.$slider.goToSlide(self.slideIndex);
+                    self.circles.push({ "slideIndex": self.slideIndex });
+                    //if get gesture, set a little long interval to avoid duplicate detection.
+                }
+                self.timestamp = results[results.length - 1].get("LoggedAt");
+            }
+            setTimeout(function () {
+                self.receiveCircle();
+            }, 500);
         })
     };
 
@@ -70,8 +77,6 @@
 app = new HomeIndex();
 setTimeout(function () {
     app.makeSlide();
-}, 100);
-setInterval(function () {
-    app.receiveCircle();
-}, 2000);
+}, 10);
+app.receiveCircle();
 
