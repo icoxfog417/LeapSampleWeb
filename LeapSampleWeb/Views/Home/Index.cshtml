@@ -1,0 +1,68 @@
+﻿@{
+    Layout = null;
+    Response.Headers["X-UA-Compatible"] = "IE=10";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <title>Leap Circle Gesture</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        .slide {
+            width:730px;
+        } 
+        #bx-pager img {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+    <script src="//www.parsecdn.com/js/parse-1.2.19.min.js"></script>
+    <script src="/Scripts/app/secret.js"></script>
+    <script>
+        START_TIMESTAMP = "@DateTime.Now.ToString("yyyyMMddHHmmssfff")";
+    </script>
+</head>
+<body>
+    <div class="container body-content">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <h1>Leap Circle Gesture</h1>
+        <hr />
+        <div class="slide">
+            <ul class="bxslider" data-bind="foreach:slides">
+                <li><img data-bind="attr: { src: $data }" /></li>
+            </ul>
+
+            <div id="bx-pager" data-bind="foreach:{ data:slides}">
+                <a data-bind="attr: { 'data-slide-index': $index }" href=""><img data-bind="attr: { src: $data }" /></a>
+            </div>
+        </div>
+
+        <div data-bind="foreach: { data: circles, as: 'c' }">
+            <div>
+                now slide index : <span data-bind="text:c.slideIndex"></span>
+            </div>
+        </div>
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/app")
+    @Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>
