@@ -68,9 +68,12 @@
                 }
                 self.timestamp = results[results.length - 1].get("LoggedAt");
             }
+            self.receiveCircle();
+            /*
             setTimeout(function () {
                 self.receiveCircle();
             }, 500);
+            */
         })
     };
 
