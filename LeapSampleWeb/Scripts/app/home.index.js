@@ -57,9 +57,10 @@
         query.greaterThan("LoggedAt", self.timestamp);
         query.find().then(function (results) {
             if (results.length > 0) {
-                r = results[Math.floor(results.length / 2)];
+                range = Math.abs(results[results.length - 1].get("Progress") - results[0].get("Progress"));
 
-                if (r.get("Progress") >= 1.0 && r.get("Progress") <= 1.5) {
+                if (range >= 0.2) {
+                    var r = results[Math.floor(results.length / 2)];
                     self.calculateSlideIndex(r);
                     self.$slider.goToSlide(self.slideIndex);
                     self.circles.push({ "slideIndex": self.slideIndex });
@@ -73,10 +74,27 @@
         })
     };
 
+    self.receiveKeyTap = function () {
+        var KeyTap = Parse.Object.extend("KeyTap");
+        var query = new Parse.Query(KeyTap);
+        query.ascending("LoggedAt");
+        query.greaterThan("LoggedAt", self.timestamp);
+        query.find().then(function (results) {
+            if (results.length > 0) {
+                alert("You Select slide" + self.slideIndex + "!");
+                self.timestamp = results[results.length - 1].get("LoggedAt");
+            }
+            setTimeout(function () {
+                self.receiveKeyTap();
+            }, 1000);
+        })
+    };
+
 }
 app = new HomeIndex();
 setTimeout(function () {
     app.makeSlide();
 }, 10);
 app.receiveCircle();
+app.receiveKeyTap();
 
